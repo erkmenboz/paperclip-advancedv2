@@ -28,6 +28,7 @@ const directBuiltInAdapterTypes = [
   "kimi_local",
   "openclaw_gateway",
   "opencode_local",
+  "orca_local",
   "process",
   "http",
 ] as const;

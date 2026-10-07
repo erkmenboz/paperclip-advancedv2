@@ -17,6 +17,10 @@ Current implementation status:
 
 - Node.js 24.11+
 - pnpm 9+
+- Rust toolchain (cargo) — only needed to build the native Paperclip Runner
+  binary (`packages/paperclip-runner`). `pnpm dev` boots without it and warns;
+  native runner runs need `runnerd`, so install via https://rustup.rs or set
+  `PAPERCLIP_RUNNER_BINARY` to a compatible prebuilt binary.
 
 ## Dependency Lockfile Policy
 

@@ -133,6 +133,7 @@ import {
   findServerAdapter,
   listServerAdapters,
   listAdapterModels,
+  listOrcaLocalModels,
   refreshAdapterModels,
   requireServerAdapter,
 } from "../adapters/index.js";
@@ -3331,6 +3332,10 @@ export function agentRoutes(
       return;
     }
     const provider = asNonEmptyString(req.query.provider);
+    if (type === "orca_local") {
+      res.json(await listOrcaLocalModels(provider, refresh));
+      return;
+    }
     if (type === "opencode_local" && provider === "openrouter") {
       res.json(await listOpenRouterModels(refresh));
       return;

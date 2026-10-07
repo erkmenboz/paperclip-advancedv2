@@ -37,6 +37,7 @@ export const AGENT_ADAPTER_TYPES = [
   "hermes_local",
   "kimi_local",
   "opencode_local",
+  "orca_local",
   "pi_local",
   "cursor",
   "openclaw_gateway",

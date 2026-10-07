@@ -13,6 +13,7 @@ import {
   Moon,
   MousePointer2,
   Sparkles,
+  SquareTerminal,
   Terminal,
   Cpu,
 } from "lucide-react";
@@ -116,6 +117,11 @@ const adapterDisplayMap: Record<string, AdapterDisplayInfo> = {
     label: "OpenCode",
     description: "OpenCode multi-provider harness",
     icon: OpenCodeLogoIcon,
+  },
+  orca_local: {
+    label: "Orca",
+    description: "Claude, Codex, Cursor, or Muse in Orca terminals",
+    icon: SquareTerminal,
   },
   pi_local: {
     label: "Pi",

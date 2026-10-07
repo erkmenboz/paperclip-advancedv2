@@ -60,6 +60,20 @@ import {
 } from "@paperclipai/adapter-cursor-cloud/server";
 import { agentConfigurationDoc as cursorCloudAgentConfigurationDoc } from "@paperclipai/adapter-cursor-cloud";
 import {
+  execute as orcaLocalExecute,
+  getConfigSchema as getOrcaLocalConfigSchema,
+  listOrcaCursorModels,
+  listOrcaMuseModels,
+  listOrcaSkills,
+  sessionCodec as orcaLocalSessionCodec,
+  syncOrcaSkills,
+  testEnvironment as orcaLocalTestEnvironment,
+} from "@paperclipai/adapter-orca-local/server";
+import {
+  agentConfigurationDoc as orcaLocalAgentConfigurationDoc,
+  models as orcaLocalModels,
+} from "@paperclipai/adapter-orca-local";
+import {
   execute as geminiExecute,
   listGeminiSkills,
   syncGeminiSkills,
@@ -717,6 +731,24 @@ const cursorCloudAdapter: ServerAdapterModule = {
   getConfigSchema: getCursorCloudConfigSchema,
 };
 
+const orcaLocalAdapter: ServerAdapterModule = {
+  type: "orca_local",
+  runtimeToolDelivery: "environment",
+  execute: (ctx) => orcaLocalExecute(ctx),
+  testEnvironment: (ctx) => orcaLocalTestEnvironment(ctx),
+  listSkills: listOrcaSkills,
+  syncSkills: syncOrcaSkills,
+  sessionCodec: orcaLocalSessionCodec,
+  sessionManagement: getAdapterSessionManagement("orca_local") ?? undefined,
+  models: orcaLocalModels,
+  supportsLocalAgentJwt: true,
+  supportsInstructionsBundle: true,
+  instructionsPathKey: "instructionsFilePath",
+  requiresMaterializedRuntimeSkills: false,
+  agentConfigurationDoc: orcaLocalAgentConfigurationDoc,
+  getConfigSchema: getOrcaLocalConfigSchema,
+};
+
 const geminiLocalAdapter: ServerAdapterModule = {
   type: "gemini_local",
   runtimeToolDelivery: "environment",
@@ -882,6 +914,7 @@ function registerBuiltInAdapters() {
     piLocalAdapter,
     cursorCloudAdapter,
     cursorLocalAdapter,
+    orcaLocalAdapter,
     geminiLocalAdapter,
     grokLocalAdapter,
     kimiLocalAdapter,
@@ -1071,6 +1104,29 @@ export async function listAdapterModels(type: string): Promise<{ id: string; lab
     if (discovered.length > 0) return discovered;
   }
   return adapter.models ?? [];
+}
+
+/**
+ * Models for an orca_local agent depend on the Orca provider it launches:
+ * Claude and Codex reuse their local adapters' catalogs, Cursor lists what
+ * the operator's account offers, and Muse uses its published catalog.
+ */
+export async function listOrcaLocalModels(
+  provider: string | null,
+  refresh: boolean,
+): Promise<{ id: string; label: string }[]> {
+  switch (provider ?? "claude") {
+    case "claude":
+      return refresh ? refreshAdapterModels("claude_local") : listAdapterModels("claude_local");
+    case "codex":
+      return refresh ? refreshAdapterModels("codex_local") : listAdapterModels("codex_local");
+    case "cursor":
+      return listOrcaCursorModels({ refresh });
+    case "muse":
+      return listOrcaMuseModels();
+    default:
+      return [];
+  }
 }
 
 export async function refreshAdapterModels(type: string): Promise<{ id: string; label: string }[]> {

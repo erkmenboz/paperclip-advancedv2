@@ -36,6 +36,7 @@ import { DEFAULT_CURSOR_LOCAL_MODEL } from "@paperclipai/adapter-cursor-local";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "@paperclipai/adapter-gemini-local";
 import { DEFAULT_KIMI_LOCAL_MODEL } from "@paperclipai/adapter-kimi-local";
 import { DEFAULT_OPENCODE_LOCAL_MODEL } from "@paperclipai/adapter-opencode-local";
+import { ORCA_PROVIDER_EFFORTS, type OrcaProviderId } from "@paperclipai/adapter-orca-local";
 import {
   Popover,
   PopoverContent,
@@ -890,7 +891,11 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   const runnerProvider = adapterType === "paperclip_runner"
     ? String(isCreate ? props.values.adapterSchemaValues?.provider ?? "codex"
       : eff("adapterConfig", "provider", config.provider === "acpx" && config.acpxAgent === "codex" ? "codex" : config.provider ?? "codex"))
-    : undefined;
+    : adapterType === "orca_local"
+      // Orca agents list the models of the provider they launch.
+      ? String(isCreate ? props.values.adapterSchemaValues?.provider ?? "claude"
+        : eff("adapterConfig", "provider", config.provider ?? "claude"))
+      : undefined;
   const modelProvider = adapterType === "opencode_local" && aiConnectionBindingSchema.safeParse(
     (overlay.runtime.runtimeConfig as Record<string, unknown> | undefined)?.aiConnection ?? runtimeConfig.aiConnection,
   ).data?.provider === "openrouter" ? "openrouter" : runnerProvider;
@@ -1286,6 +1291,11 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
             ? kimiThinkingEffortOptions
             : adapterType === "pi_local"
               ? [{ id: "", label: "Auto" }, ...["off", "minimal", "low", "medium", "high", "xhigh"].map(id => ({ id, label: id }))]
+            : adapterType === "orca_local"
+              ? [{ id: "", label: "Auto" }, ...(ORCA_PROVIDER_EFFORTS[runnerProvider as OrcaProviderId] ?? []).map((id) => ({
+                  id,
+                  label: id === "xhigh" ? "X-High" : id[0].toUpperCase() + id.slice(1),
+                }))]
               : adapterType === "claude_local" || adapterType === "grok_local"
                 ? [{ id: "", label: "Auto" }, ...setupEfforts(adapterType, currentModelId).map((id) => ({
                     id,

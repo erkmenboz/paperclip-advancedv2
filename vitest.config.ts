@@ -15,6 +15,7 @@ export default defineConfig({
       "packages/adapters/grok-local",
       "packages/adapters/kimi-local",
       "packages/adapters/openclaw-gateway",
+      "packages/adapters/orca-local",
       "packages/adapters/opencode-local",
       "packages/adapters/pi-local",
       "packages/plugins/sdk",

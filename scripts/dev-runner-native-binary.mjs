@@ -1,5 +1,15 @@
+import { spawnSync } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
+
+export function isCargoAvailable({ env = process.env } = {}) {
+  try {
+    const result = spawnSync("cargo", ["--version"], { env, stdio: "ignore" });
+    return !result.error && result.status === 0;
+  } catch {
+    return false;
+  }
+}
 
 export function resolveNativeRunnerRequirement({ exitCode, stdout }) {
   if (exitCode !== 0) {

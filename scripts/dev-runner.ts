@@ -7,6 +7,7 @@ import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { createCapturedOutputBuffer, parseJsonResponseWithLimit } from "./dev-runner-output.ts";
 import {
+  isCargoAvailable,
   paperclipRunnerBinaryNeedsBuild,
   resolveNativeRunnerRequirement,
 } from "./dev-runner-native-binary.mjs";
@@ -580,6 +581,15 @@ async function buildPaperclipRunner() {
       configuredBinary: env.PAPERCLIP_RUNNER_BINARY,
     })
   ) {
+    return;
+  }
+
+  if (!isCargoAvailable()) {
+    console.warn("[paperclip] Rust toolchain (cargo) not found; skipping the native runner binary build.");
+    console.warn("[paperclip] The dev server will still start, but native runner runs need runnerd.");
+    console.warn(
+      "[paperclip] Install Rust from https://rustup.rs and re-run `pnpm dev`, or set PAPERCLIP_RUNNER_BINARY to a compatible prebuilt runnerd binary.",
+    );
     return;
   }
 

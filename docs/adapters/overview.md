@@ -23,6 +23,7 @@ When a heartbeat fires, Paperclip:
 | [Gemini CLI](/adapters/gemini-local) | `gemini_local` | Runs Gemini CLI locally (experimental — adapter package exists, not yet in stable type enum) |
 | [Kimi Code CLI](/adapters/kimi-local) | `kimi_local` | Runs Kimi Code CLI locally through ACP, with explicitly selectable headless `-p` mode |
 | OpenCode | `opencode_local` | Runs OpenCode CLI locally (multi-provider `provider/model`) |
+| [Orca](/adapters/orca-local) | `orca_local` | Runs Claude Code, Codex, Cursor, or Muse in a visible Orca terminal tab, supervised through Orca |
 | Cursor | `cursor` | Runs Cursor in background mode |
 | Pi | `pi_local` | Runs an embedded Pi agent locally |
 | Hermes | `hermes_local` | Runs the local Hermes CLI through `@paperclipai/hermes-paperclip-adapter` |

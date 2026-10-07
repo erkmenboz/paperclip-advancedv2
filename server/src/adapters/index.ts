@@ -1,6 +1,7 @@
 export {
   getServerAdapter,
   listAdapterModels,
+  listOrcaLocalModels,
   refreshAdapterModels,
   listServerAdapters,
   findServerAdapter,

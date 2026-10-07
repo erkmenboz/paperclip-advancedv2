@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  isCargoAvailable,
   paperclipRunnerBinaryNeedsBuild,
   resolveNativeRunnerRequirement,
 } from "../../../scripts/dev-runner-native-binary.mjs";
@@ -119,4 +120,34 @@ describe("paperclip runner native dev prerequisite", () => {
       }),
     ).toBe(false);
   });
+
+  it("reports a missing Rust toolchain when cargo is not on PATH", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-cargo-missing-"));
+    tempRoots.add(dir);
+    expect(isCargoAvailable({ env: pathEnvWith(dir) })).toBe(false);
+  });
+
+  it("detects a Rust toolchain via a cargo executable on PATH", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-cargo-present-"));
+    tempRoots.add(dir);
+    const executable = process.platform === "win32" ? "cargo.exe" : "cargo";
+    const cargoPath = path.join(dir, executable);
+    fs.copyFileSync(process.execPath, cargoPath);
+    if (process.platform !== "win32") {
+      fs.chmodSync(cargoPath, 0o755);
+    }
+    expect(isCargoAvailable({ env: pathEnvWith(dir) })).toBe(true);
+  });
 });
+
+function pathEnvWith(dir: string): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  for (const key of Object.keys(env)) {
+    if (key.toLowerCase() === "path") {
+      delete env[key];
+    }
+  }
+  env.PATH = dir;
+  env.Path = dir;
+  return env;
+}
